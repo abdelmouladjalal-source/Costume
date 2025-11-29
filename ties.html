@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>مخزون ربطات العنق</title>
+<style>
+body{font-family:Arial;direction:rtl;background:#f4f4f4;margin:0;padding:0;}
+.container{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:8px;}
+h2{text-align:center;margin-bottom:15px;}
+table{width:100%;border-collapse:collapse;margin-top:15px;}
+th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:14px;}
+.available{background:#e8ffe8;}
+.rented{background:#ffd6d6;}
+input,button{padding:5px;margin:2px;}
+button{background:#3498db;color:#fff;border:none;cursor:pointer;border-radius:4px;}
+button:hover{opacity:0.85;}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>مخزون ربطات العنق</h2>
+
+<h3>إضافة نوع جديد</h3>
+<input id="newTieName" placeholder="اسم الربطة">
+<button onclick="addNewTie()">إضافة</button>
+
+<table>
+<thead>
+<tr><th>الاسم</th><th>الحالة</th><th>إرجاع</th></tr>
+</thead>
+<tbody id="stockBody"></tbody>
+</table>
+
+<button onclick="window.location.href='index.html'">الرجوع للصفحة الرئيسية</button>
+</div>
+
+<script>
+let ties = JSON.parse(localStorage.getItem("ties")) || [];
+
+function renderStock(){
+ let tbody = document.getElementById("stockBody");
+ tbody.innerHTML = "";
+ ties.forEach((t,i)=>{
+  let cls = t.status=="مؤجر" ? "rented" : "available";
+  tbody.innerHTML += `<tr class="${cls}">
+   <td>${t.name}</td>
+   <td>${t.status}</td>
+   <td>${t.status=="مؤجر"?`<button onclick="returnItem(${i})">إرجاع</button>`:"-"}</td>
+  </tr>`;
+ });
+}
+renderStock();
+
+function returnItem(i){
+ if(!confirm("هل تريد إرجاع هذه القطعة؟")) return;
+ ties[i].status="متوفر";
+ localStorage.setItem("ties", JSON.stringify(ties));
+ renderStock();
+}
+
+function addNewTie(){
+ let name = document.getElementById("newTieName").value.trim();
+ if(!name){ alert("يجب إدخال الاسم"); return; }
+ ties.push({name:name, status:"متوفر"});
+ localStorage.setItem("ties", JSON.stringify(ties));
+ renderStock();
+ document.getElementById("newTieName").value="";
+}
+</script>
+</body>
+</html>

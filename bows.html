@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>مخزون الفراشات</title>
+<style>
+body{font-family:Arial;direction:rtl;background:#f4f4f4;margin:0;padding:0;}
+.container{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:8px;}
+h2{text-align:center;margin-bottom:15px;}
+table{width:100%;border-collapse:collapse;margin-top:15px;}
+th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:14px;}
+.available{background:#e8ffe8;}
+.rented{background:#ffd6d6;}
+input,button{padding:5px;margin:2px;}
+button{background:#3498db;color:#fff;border:none;cursor:pointer;border-radius:4px;}
+button:hover{opacity:0.85;}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>مخزون الفراشات</h2>
+
+<h3>إضافة نوع جديد</h3>
+<input id="newBowName" placeholder="اسم الفراشة">
+<button onclick="addNewBow()">إضافة</button>
+
+<table>
+<thead>
+<tr><th>الاسم</th><th>الحالة</th><th>إرجاع</th></tr>
+</thead>
+<tbody id="stockBody"></tbody>
+</table>
+
+<button onclick="window.location.href='index.html'">الرجوع للصفحة الرئيسية</button>
+</div>
+
+<script>
+let bows = JSON.parse(localStorage.getItem("bows")) || [];
+
+function renderStock(){
+ let tbody = document.getElementById("stockBody");
+ tbody.innerHTML = "";
+ bows.forEach((b,i)=>{
+  let cls = b.status=="مؤجر" ? "rented" : "available";
+  tbody.innerHTML += `<tr class="${cls}">
+   <td>${b.name}</td>
+   <td>${b.status}</td>
+   <td>${b.status=="مؤجر"?`<button onclick="returnItem(${i})">إرجاع</button>`:"-"}</td>
+  </tr>`;
+ });
+}
+renderStock();
+
+function returnItem(i){
+ if(!confirm("هل تريد إرجاع هذه القطعة؟")) return;
+ bows[i].status="متوفر";
+ localStorage.setItem("bows", JSON.stringify(bows));
+ renderStock();
+}
+
+function addNewBow(){
+ let name = document.getElementById("newBowName").value.trim();
+ if(!name){ alert("يجب إدخال الاسم"); return; }
+ bows.push({name:name, status:"متوفر"});
+ localStorage.setItem("bows", JSON.stringify(bows));
+ renderStock();
+ document.getElementById("newBowName").value="";
+}
+</script>
+</body>
+</html>

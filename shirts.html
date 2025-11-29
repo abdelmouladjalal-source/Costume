@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>مخزون القمصان</title>
+<style>
+body{font-family:Arial;direction:rtl;background:#f4f4f4;margin:0;padding:0;}
+.container{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:8px;}
+h2{text-align:center;margin-bottom:15px;}
+table{width:100%;border-collapse:collapse;margin-top:15px;}
+th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:14px;}
+.available{background:#e8ffe8;}
+.rented{background:#ffd6d6;}
+input,select,button{padding:5px;margin:2px;}
+button{background:#3498db;color:#fff;border:none;cursor:pointer;border-radius:4px;}
+button:hover{opacity:0.85;}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>مخزون القمصان</h2>
+
+<h3>إضافة نوع جديد</h3>
+<input id="newShirtName" placeholder="اسم القميص">
+<select id="newShirtSize">
+  <option value="">اختر المقاس</option>
+  <option value="XS">XS</option>
+  <option value="S">S</option>
+  <option value="M">M</option>
+  <option value="L">L</option>
+  <option value="XL">XL</option>
+  <option value="XXL">XXL</option>
+  <option value="3XL">3XL</option>
+</select>
+<button onclick="addNewShirt()">إضافة</button>
+
+<table>
+<thead>
+<tr><th>الاسم</th><th>المقاس</th><th>الحالة</th><th>إرجاع</th></tr>
+</thead>
+<tbody id="stockBody"></tbody>
+</table>
+
+<button onclick="window.location.href='index.html'">الرجوع للصفحة الرئيسية</button>
+</div>
+
+<script>
+let shirts = JSON.parse(localStorage.getItem("shirts")) || [];
+
+function renderStock(){
+ let tbody = document.getElementById("stockBody");
+ tbody.innerHTML = "";
+ shirts.forEach((s,i)=>{
+  let cls = s.status=="مؤجر" ? "rented" : "available";
+  tbody.innerHTML += `<tr class="${cls}">
+   <td>${s.name}</td>
+   <td>${s.size || "-"}</td>
+   <td>${s.status}</td>
+   <td>${s.status=="مؤجر"?`<button onclick="returnItem(${i})">إرجاع</button>`:"-"}</td>
+  </tr>`;
+ });
+}
+renderStock();
+
+function returnItem(i){
+ if(!confirm("هل تريد إرجاع هذه القطعة؟")) return;
+ shirts[i].status="متوفر";
+ localStorage.setItem("shirts", JSON.stringify(shirts));
+ renderStock();
+}
+
+function addNewShirt(){
+ let name = document.getElementById("newShirtName").value.trim();
+ let size = document.getElementById("newShirtSize").value;
+ if(!name || !size){ alert("يجب إدخال الاسم والمقاس"); return; }
+ shirts.push({name:name, size:size, status:"متوفر"});
+ localStorage.setItem("shirts", JSON.stringify(shirts));
+ renderStock();
+ document.getElementById("newShirtName").value="";
+ document.getElementById("newShirtSize").value="";
+}
+</script>
+</body>
+</html>

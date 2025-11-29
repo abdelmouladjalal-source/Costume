@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>مخزون الجيلي</title>
+<style>
+body{font-family:Arial;direction:rtl;background:#f4f4f4;margin:0;padding:0;}
+.container{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:8px;}
+h2{text-align:center;margin-bottom:15px;}
+table{width:100%;border-collapse:collapse;margin-top:15px;}
+th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:14px;}
+.available{background:#e8ffe8;}
+.rented{background:#ffd6d6;}
+input,select,button{padding:5px;margin:2px;}
+button{background:#3498db;color:#fff;border:none;cursor:pointer;border-radius:4px;}
+button:hover{opacity:0.85;}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>مخزون الجيلي</h2>
+
+<h3>إضافة نوع جديد</h3>
+<input id="newGiletName" placeholder="اسم الجيلي">
+<select id="newGiletSize">
+  <option value="">اختر المقاس</option>
+  <option value="42">42</option>
+  <option value="44">44</option>
+  <option value="46">46</option>
+  <option value="48">48</option>
+  <option value="50">50</option>
+  <option value="52">52</option>
+  <option value="54">54</option>
+  <option value="56">56</option>
+</select>
+<button onclick="addNewGilet()">إضافة</button>
+
+<table>
+<thead>
+<tr><th>الاسم</th><th>المقاس</th><th>الحالة</th><th>إرجاع</th></tr>
+</thead>
+<tbody id="stockBody"></tbody>
+</table>
+
+<button onclick="window.location.href='index.html'">الرجوع للصفحة الرئيسية</button>
+</div>
+
+<script>
+let gilets = JSON.parse(localStorage.getItem("gilets")) || [];
+
+function renderStock(){
+ let tbody = document.getElementById("stockBody");
+ tbody.innerHTML = "";
+ gilets.forEach((g,i)=>{
+  let cls = g.status=="مؤجر" ? "rented" : "available";
+  tbody.innerHTML += `<tr class="${cls}">
+   <td>${g.name}</td>
+   <td>${g.size || "-"}</td>
+   <td>${g.status}</td>
+   <td>${g.status=="مؤجر"?`<button onclick="returnItem(${i})">إرجاع</button>`:"-"}</td>
+  </tr>`;
+ });
+}
+renderStock();
+
+function returnItem(i){
+ if(!confirm("هل تريد إرجاع هذه القطعة؟")) return;
+ gilets[i].status="متوفر";
+ localStorage.setItem("gilets", JSON.stringify(gilets));
+ renderStock();
+}
+
+function addNewGilet(){
+ let name = document.getElementById("newGiletName").value.trim();
+ let size = document.getElementById("newGiletSize").value;
+ if(!name || !size){ alert("يجب إدخال الاسم والمقاس"); return; }
+ gilets.push({name:name, size:size, status:"متوفر"});
+ localStorage.setItem("gilets", JSON.stringify(gilets));
+ renderStock();
+ document.getElementById("newGiletName").value="";
+ document.getElementById("newGiletSize").value="";
+}
+</script>
+</body>
+</html>
