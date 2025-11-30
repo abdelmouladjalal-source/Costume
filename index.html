@@ -86,7 +86,8 @@ th,td{border:1px solid #ccc;padding:5px;text-align:center}
 <script>
 rentDate.value = new Date().toISOString().split('T')[0];
 
-let pants=[], shirts=[], rentals=[];
+// ===== المخازن =====
+let pants=[], gilets=[], vests=[], shirts=[], belts=[], shoes=[], ties=[], bows=[], broches=[]; rentals=[];
 
 // ===== تحميل البيانات =====
 db.ref("pants").on("value", s=>{pants=s.val()||[]; fillSelect("pant",pants)});
@@ -197,5 +198,6 @@ function searchRental(){
 
 </body>
 </html>
+
 
 
