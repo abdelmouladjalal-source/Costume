@@ -23,24 +23,25 @@ const db = firebase.database();
 </script>
 
 <style>
-body{font-family:Arial;direction:rtl;background:#f4f4f4}
+body{font-family:Arial;direction:rtl;background:#f4f4f4;margin:0;}
 .container{max-width:1100px;margin:auto;background:#fff;padding:20px;border-radius:8px}
-form{display:flex;flex-wrap:wrap;gap:10px;}
-form input, form select{flex:1;padding:7px;}
-button{padding:7px;background:#3498db;color:#fff;border:none;border-radius:4px;cursor:pointer}
-button:hover{opacity:0.8;}
+form{display:flex;flex-wrap:wrap;gap:8px}
+form input,select{flex:1;padding:6px}
+button{background:#3498db;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer}
+button:hover{opacity:.8}
 table{width:100%;border-collapse:collapse;margin-top:15px}
-th,td{border:1px solid #ccc;padding:6px;text-align:center;}
+th,td{border:1px solid #ccc;padding:5px;text-align:center}
 .returned{background:#c8f7c5}
+.search-box{margin:10px 0}
 </style>
 </head>
 <body>
 
 <div class="container">
-<h2>COSTUME17</h2>
+<h2>واجهة التأجير</h2>
 
 <form>
-<input id="fname" placeholder="الاسم">
+<input id="fname" placeholder="الاسم واللقب">
 <input id="phone" placeholder="الهاتف">
 <input type="date" id="rentDate">
 <input type="date" id="returnDate">
@@ -51,79 +52,68 @@ th,td{border:1px solid #ccc;padding:6px;text-align:center;}
 <button type="button" onclick="addRental()">تأكيد التأجير</button>
 </form>
 
+<div class="search-box">
+<input id="searchInput" onkeyup="searchRental()" placeholder="ابحث عن بدلة أو قطعة...">
+</div>
+
 <table>
 <thead>
 <tr>
-<th>الاسم</th>
-<th>الهاتف</th>
-<th>السروال</th>
-<th>القميص</th>
-<th>تاريخ الإرجاع</th>
-<th>إرجاع</th>
-<th>حذف</th>
+<th>الاسم</th><th>الهاتف</th><th>السروال</th><th>القميص</th>
+<th>تاريخ الإرجاع</th><th>إرجاع</th><th>حذف</th>
 </tr>
 </thead>
 <tbody id="rentalsBody"></tbody>
 </table>
+
 </div>
 
 <script>
-// التاريخ اليوم
-rentDate.value = new Date().toISOString().split("T")[0];
+rentDate.value = new Date().toISOString().split('T')[0];
 
-// ===== المتغيرات =====
-let rentals = [];
-let pants = [];
-let shirts = [];
+let pants=[], shirts=[], rentals=[];
 
-// ===== تحميل البيانات من Firebase =====
-db.ref("rentals").on("value", snap => {
- rentals = snap.val() ? Object.values(snap.val()) : [];
- renderRentals();
+// ===== تحميل البيانات =====
+db.ref("pants").on("value", s=>{pants=s.val()||[]; fillSelect("pant",pants)});
+db.ref("shirts").on("value", s=>{shirts=s.val()||[]; fillSelect("shirt",shirts)});
+db.ref("rentals").on("value", s=>{
+rentals = s.val()?Object.values(s.val()):[];
+renderRentals();
 });
 
-db.ref("pants").on("value", snap => {
- pants = snap.val() || [];
- refreshSelects();
-});
-
-db.ref("shirts").on("value", snap => {
- shirts = snap.val() || [];
- refreshSelects();
-});
-
-// ===== إنشاء افتراضي للمخزون =====
+// ===== إنشاء المخزون مرة واحدة =====
 function initStock(){
- if(pants.length===0){
-  for(let i=1;i<=10;i++)
-   pants.push({name:"سروال "+i,size:42,status:"متوفر"});
-  db.ref("pants").set(pants);
- }
- if(shirts.length===0){
-  ["S","M","L","XL"].forEach(s=>shirts.push({name:"قميص",size:s,status:"متوفر"}));
-  db.ref("shirts").set(shirts);
- }
+if(pants.length===0){
+ for(let i=1;i<=15;i++)
+  for(let s=42;s<=56;s+=2)
+   pants.push({name:"سروال "+i,size:s,status:"متوفر"});
+ db.ref("pants").set(pants);
 }
-setTimeout(initStock,1000);
 
-// ===== تعبئة القوائم =====
+if(shirts.length===0){
+ ["XS","S","M","L","XL","XXL","3XL"].forEach(size=>{
+ shoesLoop:
+ shirts.push({name:"قميص",size,status:"متوفر"});
+ })
+ db.ref("shirts").set(shirts);
+}
+}
+setTimeout(initStock,1500);
+
+// ===== ملء القوائم =====
 function fillSelect(id,arr){
  let s=document.getElementById(id);
- s.innerHTML="<option value=''>--اختيار--</option>";
+ s.innerHTML="<option value=''>-- اختيار --</option>";
  arr.forEach((x,i)=>{
   let o=document.createElement("option");
   o.value=i;
-  o.text = x.name+" "+x.size+" ("+x.status+")";
+  o.text=`${x.name} ${x.size||""} (${x.status})`;
   if(x.status!=="متوفر") o.disabled=true;
   s.appendChild(o);
  });
 }
-function refreshSelects(){
- fillSelect("pant",pants);
- fillSelect("shirt",shirts);
-}
 
-// ===== إضافة =====
+// ===== إضافة تأجير =====
 function addRental(){
  let r={
   fname:fname.value,
@@ -143,16 +133,16 @@ function addRental(){
 }
 
 // ===== عرض =====
-function renderRentals(){
+function renderRentals(list=rentals){
  rentalsBody.innerHTML="";
- rentals.forEach((r,i)=>{
+ list.forEach((r,i)=>{
  rentalsBody.innerHTML+=`
- <tr class="${r.returned?'returned':''}">
+ <tr class="${r.returned?"returned":""}">
  <td>${r.fname}</td>
  <td>${r.phone}</td>
- <td>${getName(pants,r.pant)}</td>
- <td>${getName(shirts,r.shirt)}</td>
- <td>${r.returnDate||""}</td>
+ <td>${getItem(pants,r.pant)}</td>
+ <td>${getItem(shirts,r.shirt)}</td>
+ <td>${r.returnDate||"-"}</td>
  <td><button onclick="returnRental(${i})">إرجاع</button></td>
  <td><button onclick="deleteRental(${i})">حذف</button></td>
  </tr>`;
@@ -160,15 +150,13 @@ function renderRentals(){
 }
 
 // ===== أدوات =====
-function getName(arr,i){
- return arr[i]?arr[i].name+" "+arr[i].size:"";
-}
+function getItem(arr,i){return arr[i]?arr[i].name+" "+arr[i].size:"";}
 
 // ===== إرجاع =====
 function returnRental(i){
  let r=rentals[i];
- if(r.pant!=="") pants[r.pant].status="متوفر";
- if(r.shirt!=="") shirts[r.shirt].status="متوفر";
+ pants[r.pant].status="متوفر";
+ shirts[r.shirt].status="متوفر";
  r.returned=true;
  db.ref("pants").set(pants);
  db.ref("shirts").set(shirts);
@@ -179,6 +167,16 @@ function returnRental(i){
 function deleteRental(i){
  rentals.splice(i,1);
  db.ref("rentals").set(rentals);
+}
+
+// ===== بحث =====
+function searchRental(){
+ let v=searchInput.value.toLowerCase();
+ let f=rentals.filter(r=>{
+  return getItem(pants,r.pant).toLowerCase().includes(v) ||
+         getItem(shirts,r.shirt).toLowerCase().includes(v);
+ });
+ renderRentals(f);
 }
 </script>
 
