@@ -2,202 +2,146 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>SYSTEME COSTUME 17</title>
-
-<!-- Firebase v8 -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCmOcOnLJGmlym4Z__BG6wnb43fQK8JR6ew",
-  authDomain: "costume17-79fe2.firebaseapp.com",
-  databaseURL: "https://costume17-79fe2-default-rtdb.firebaseio.com",
-  projectId: "costume17-79fe2",
-  storageBucket: "costume17-79fe2.appspot.com",
-  messagingSenderId: "186622774682",
-  appId: "1:186622774682:web:f498993ae2c45423a0be23"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-</script>
-
+<title>COSTUME 17 - Firebase</title>
 <style>
-body{font-family:Arial;direction:rtl;background:#f4f4f4;margin:0;}
-.container{max-width:1100px;margin:auto;background:#fff;padding:20px;border-radius:8px}
-form{display:flex;flex-wrap:wrap;gap:8px}
-form input,select{flex:1;padding:6px}
-button{background:#3498db;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer}
-button:hover{opacity:.8}
-table{width:100%;border-collapse:collapse;margin-top:15px}
+body{font-family:Arial;direction:rtl;background:#f4f4f4}
+.container{max-width:1100px;margin:auto;background:white;padding:20px;border-radius:8px}
+table{width:100%;border-collapse:collapse}
 th,td{border:1px solid #ccc;padding:5px;text-align:center}
-.returned{background:#c8f7c5}
-.search-box{margin:10px 0}
+.available{background:#e8ffe8}
+.rented{background:#ffd6d6}
+select,input,button{padding:6px;margin:2px}
+button{background:#3498db;color:white;border:none;border-radius:4px;cursor:pointer}
+button:hover{opacity:.8}
 </style>
 </head>
 <body>
 
 <div class="container">
-<h2>واجهة التأجير</h2>
+<h2>COSTUME 17</h2>
 
 <form>
-<input id="fname" placeholder="الاسم واللقب">
-<input id="phone" placeholder="الهاتف">
-<input type="date" id="rentDate">
+<input placeholder="الاسم" id="fname">
+<input placeholder="الهاتف" id="phone">
 <input type="date" id="returnDate">
 
-<select id="pant"></select>
-<select id="gilet"></select>
-<select id="vest"></select>
-<select id="shirt"></select>
-<select id="belt"></select>
-<select id="shoe"></select>
-<select id="tie"></select>
-<select id="bow"></select>
-<select id="broche"></select>
+<select id="pants"></select>
+<select id="gilets"></select>
+<select id="vests"></select>
+<select id="shirts"></select>
+<select id="belts"></select>
+<select id="shoes"></select>
+<select id="ties"></select>
+<select id="bows"></select>
+<select id="broches"></select>
 
 <button type="button" onclick="addRental()">تأكيد التأجير</button>
 </form>
 
+<br>
+
 <table>
 <thead>
 <tr>
-<th>الاسم واللقب</th>
-<th>الهاتف</th>
-<th>السروال</th>
-<th>الجيلي</th>
-<th>الفاست</th>
-<th>القميص</th>
-<th>الحزام</th>
-<th>الحذاء</th>
-<th>الربطة</th>
-<th>الفراشة</th>
-<th>البروش</th>
-<th>تاريخ الإرجاع</th>
+<th>الاسم</th><th>الهاتف</th>
+<th>سروال</th><th>جيلي</th><th>فاست</th><th>قميص</th>
+<th>حزام</th><th>حذاء</th><th>ربطة</th><th>فراشة</th><th>بروش</th>
 <th>إرجاع</th>
-<th>حذف</th>
 </tr>
 </thead>
-<tbody id="rentalsBody"></tbody>
+<tbody id="rentals"></tbody>
 </table>
 
 </div>
 
-<script>
-rentDate.value = new Date().toISOString().split('T')[0];
+<!-- Firebase -->
+<script type="module">
 
-// ===== المخازن =====
-let pants=[], gilets=[], vests=[], shirts=[], belts=[], shoes=[], ties=[], bows=[], broches=[]; rentals=[];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ===== تحميل البيانات =====
-db.ref("pants").on("value", s=>{pants=s.val()||[]; fillSelect("pant",pants)});
-db.ref("shirts").on("value", s=>{shirts=s.val()||[]; fillSelect("shirt",shirts)});
-db.ref("rentals").on("value", s=>{
-rentals = s.val()?Object.values(s.val()):[];
-renderRentals();
-});
+const firebaseConfig = {
+  apiKey: "AIzaSyCmOcOnLJGlym4Z__BG6wnb43fQK8JR6ew",
+  authDomain: "costume17-79fe2.firebaseapp.com",
+  projectId: "costume17-79fe2",
+  storageBucket: "costume17-79fe2.firebasestorage.app",
+  messagingSenderId: "186622774682",
+  appId: "1:186622774682:web:f498993ae2c45423a0be23"
+};
 
-// ===== إنشاء المخزون مرة واحدة =====
-function initStock(){
-if(pants.length===0){
- for(let i=1;i<=15;i++)
-  for(let s=42;s<=56;s+=2)
-   pants.push({name:"سروال "+i,size:s,status:"متوفر"});
- db.ref("pants").set(pants);
-}
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-if(shirts.length===0){
- ["XS","S","M","L","XL","XXL","3XL"].forEach(size=>{
- shoesLoop:
- shirts.push({name:"قميص",size,status:"متوفر"});
- })
- db.ref("shirts").set(shirts);
-}
-}
-setTimeout(initStock,1500);
+// ✅ المخازن
+const stocks = ["pants","gilets","vests","shirts","belts","shoes","ties","bows","broches"];
 
-// ===== ملء القوائم =====
-function fillSelect(id,arr){
- let s=document.getElementById(id);
- s.innerHTML="<option value=''>-- اختيار --</option>";
- arr.forEach((x,i)=>{
-  let o=document.createElement("option");
-  o.value=i;
-  o.text=`${x.name} ${x.size||""} (${x.status})`;
-  if(x.status!=="متوفر") o.disabled=true;
-  s.appendChild(o);
+// ✅ تحميل القوائم
+async function loadStock(type){
+ let select = document.getElementById(type);
+ select.innerHTML = "<option value=''>--اختيار--</option>";
+ let snap = await getDocs(collection(db,type));
+ snap.forEach(doc=>{
+   let item = doc.data();
+   let opt = document.createElement("option");
+   opt.value = doc.id;
+   opt.innerText = item.name + (item.size ? " " + item.size : "") + " ("+item.status+")";
+   if(item.status!="متوفر") opt.disabled = true;
+   select.appendChild(opt);
  });
 }
 
-// ===== إضافة تأجير =====
-function addRental(){
- let r={
-  fname:fname.value,
-  phone:phone.value,
-  pant:pant.value,
-  shirt:shirt.value,
-  returnDate:returnDate.value,
-  returned:false
+stocks.forEach(loadStock);
+
+// ✅ إضافة تأجير
+async function addRental(){
+ let data = {
+   fname: fname.value,
+   phone: phone.value,
+   returnDate: returnDate.value,
  };
 
- if(r.pant!=="") pants[r.pant].status="مؤجر";
- if(r.shirt!=="") shirts[r.shirt].status="مؤجر";
+ for(let s of stocks){
+   data[s] = document.getElementById(s).value;
+   if(data[s]){
+     let ref = doc(db,s,data[s]);
+     await updateDoc(ref,{status:"مؤجر"});
+   }
+ }
 
- db.ref("pants").set(pants);
- db.ref("shirts").set(shirts);
- db.ref("rentals").push(r);
+ await addDoc(collection(db,"rentals"),data);
+ alert("تم التأجير ✅");
+ location.reload();
 }
 
-// ===== عرض =====
-function renderRentals(list=rentals){
- rentalsBody.innerHTML="";
- list.forEach((r,i)=>{
- rentalsBody.innerHTML+=`
- <tr class="${r.returned?"returned":""}">
- <td>${r.fname}</td>
- <td>${r.phone}</td>
- <td>${getItem(pants,r.pant)}</td>
- <td>${getItem(shirts,r.shirt)}</td>
- <td>${r.returnDate||"-"}</td>
- <td><button onclick="returnRental(${i})">إرجاع</button></td>
- <td><button onclick="deleteRental(${i})">حذف</button></td>
- </tr>`;
-});
-}
-
-// ===== أدوات =====
-function getItem(arr,i){return arr[i]?arr[i].name+" "+arr[i].size:"";}
-
-// ===== إرجاع =====
-function returnRental(i){
- let r=rentals[i];
- pants[r.pant].status="متوفر";
- shirts[r.shirt].status="متوفر";
- r.returned=true;
- db.ref("pants").set(pants);
- db.ref("shirts").set(shirts);
- db.ref("rentals").set(rentals);
-}
-
-// ===== حذف =====
-function deleteRental(i){
- rentals.splice(i,1);
- db.ref("rentals").set(rentals);
-}
-
-// ===== بحث =====
-function searchRental(){
- let v=searchInput.value.toLowerCase();
- let f=rentals.filter(r=>{
-  return getItem(pants,r.pant).toLowerCase().includes(v) ||
-         getItem(shirts,r.shirt).toLowerCase().includes(v);
+// ✅ عرض المؤجرين
+async function loadRentals(){
+ let body = document.getElementById("rentals");
+ body.innerHTML="";
+ let snap = await getDocs(collection(db,"rentals"));
+ snap.forEach(d=>{
+   let r = d.data();
+   body.innerHTML+=`
+   <tr>
+   <td>${r.fname}</td>
+   <td>${r.phone}</td>
+   <td>${r.pants||""}</td>
+   <td>${r.gilets||""}</td>
+   <td>${r.vests||""}</td>
+   <td>${r.shirts||""}</td>
+   <td>${r.belts||""}</td>
+   <td>${r.shoes||""}</td>
+   <td>${r.ties||""}</td>
+   <td>${r.bows||""}</td>
+   <td>${r.broches||""}</td>
+   <td>${r.returnDate||""}</td>
+   </tr>
+   `;
  });
- renderRentals(f);
 }
+
+loadRentals();
+
 </script>
 
 </body>
 </html>
-
-
-
