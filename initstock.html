@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<body>
+<button onclick="init()">تعبئة Firebase</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyCmOcOnLJGlym4Z__BG6wnb43fQK8JR6ew",
+ authDomain: "costume17-79fe2.firebaseapp.com",
+ projectId: "costume17-79fe2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function sizes42(){let a=[]; for(let i=42;i<=56;i+=2) a.push(i); return a;}
+function shoesSizes(){return [39,40,41,42,43,44];}
+let shirtsSizes = ["XS","S","M","L","XL","XXL"];
+
+async function init(){
+
+// السراويل
+for(let i=1;i<=15;i++) for(let s of sizes42())
+ await addDoc(collection(db,"pants"),{name:"سروال "+i,size:s,status:"متوفر"});
+
+// الجيلي
+for(let i=1;i<=15;i++) for(let s of sizes42())
+ await addDoc(collection(db,"gilets"),{name:"جيلي "+i,size:s,status:"متوفر"});
+
+// الفاست
+for(let i=1;i<=15;i++) for(let s of sizes42())
+ await addDoc(collection(db,"vests"),{name:"فاست "+i,size:s,status:"متوفر"});
+
+// الأحذية
+for(let i=1;i<=4;i++) for(let s of shoesSizes())
+ await addDoc(collection(db,"shoes"),{name:"حذاء "+i,size:s,status:"متوفر"});
+
+// القمصان
+for(let i=1;i<=4;i++) for(let s of shirtsSizes)
+ await addDoc(collection(db,"shirts"),{name:"قميص "+i,size:s,status:"متوفر"});
+
+// ربطات
+for(let i=1;i<=20;i++) await addDoc(collection(db,"ties"),{name:"ربطة "+i,status:"متوفر"});
+
+// فراشات
+for(let i=1;i<=10;i++) await addDoc(collection(db,"bows"),{name:"فراشة "+i,status:"متوفر"});
+
+// بروش
+for(let i=1;i<=10;i++) await addDoc(collection(db,"broches"),{name:"بروش "+i,status:"متوفر"});
+
+// أحزمة
+for(let i=1;i<=10;i++) await addDoc(collection(db,"belts"),{name:"حزام "+i,status:"متوفر"});
+
+alert("تم إنشاء المخزون ✅");
+}
+</script>
+</body>
+</html>
