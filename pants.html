@@ -2,63 +2,90 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>مخزن السراويل</title>
+<title>مخزون السراويل</title>
 <style>
-table{width:100%;border-collapse:collapse}
-td,th{border:1px solid #ccc;padding:6px;text-align:center}
+body{font-family:Arial;direction:rtl;background:#f4f4f4;margin:0;padding:0;}
+.container{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:8px;}
+h2{text-align:center;margin-bottom:15px;}
+table{width:100%;border-collapse:collapse;margin-top:15px;}
+th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:14px;}
+.available{background:#e8ffe8;}
+.rented{background:#ffd6d6;}
+input,select,button{padding:5px;margin:2px;}
+button{background:#3498db;color:#fff;border:none;cursor:pointer;border-radius:4px;}
+button:hover{opacity:0.85;}
 </style>
 </head>
 <body>
 
-<h2>مخزن السراويل</h2>
+<div class="container">
+<h2>مخزون السراويل</h2>
 
-<input id="name" placeholder="اسم جديد">
-<input id="size" placeholder="المقاس">
-<button onclick="addItem()">إضافة</button>
+<!-- إضافة نوع جديد -->
+<h3>إضافة نوع جديد</h3>
+<input id="newPantName" placeholder="اسم السروال">
+<select id="newPantSize">
+  <option value="">اختر المقاس</option>
+  <option value="42">42</option>
+  <option value="44">44</option>
+  <option value="46">46</option>
+  <option value="48">48</option>
+  <option value="50">50</option>
+  <option value="52">52</option>
+  <option value="54">54</option>
+  <option value="56">56</option>
+</select>
+<button onclick="addNewPant()">إضافة</button>
 
 <table>
 <thead>
-<tr><th>الاسم</th><th>المقاس</th><th>الحالة</th></tr>
+<tr><th>الاسم</th><th>المقاس</th><th>الحالة</th><th>إرجاع</th></tr>
 </thead>
-<tbody id="data"></tbody>
+<tbody id="stockBody"></tbody>
 </table>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<button onclick="window.location.href='index.html'">الرجوع للصفحة الرئيسية</button>
+</div>
 
-const firebaseConfig = {
- apiKey: "AIzaSy...",
- authDomain: "costume17-79fe2.firebaseapp.com",
- projectId: "costume17-79fe2"
-};
+<script>
+// تحميل المخزون من localStorage
+let pants = JSON.parse(localStorage.getItem("pants")) || [];
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const COL="pants"; // ✳ غيرها حسب الصفحة
-
-async function load(){
- let tbody=document.getElementById("data");
- tbody.innerHTML="";
- let snap=await getDocs(collection(db,COL));
- snap.forEach(d=>{
-  let x=d.data();
-  tbody.innerHTML+=`<tr>
-  <td>${x.name}</td>
-  <td>${x.size||"-"}</td>
-  <td>${x.status}</td>
+// عرض المخزون
+function renderStock(){
+ let tbody = document.getElementById("stockBody");
+ tbody.innerHTML = "";
+ pants.forEach((p,i)=>{
+  let cls = p.status=="مؤجر" ? "rented" : "available";
+  tbody.innerHTML += `<tr class="${cls}">
+   <td>${p.name}</td>
+   <td>${p.size || "-"}</td>
+   <td>${p.status}</td>
+   <td>${p.status=="مؤجر"?`<button onclick="returnItem(${i})">إرجاع</button>`:"-"}</td>
   </tr>`;
  });
 }
-load();
+renderStock();
 
-async function addItem(){
- let data={name:name.value,status:"متوفر"};
- if(size.value) data.size=size.value;
- await addDoc(collection(db,COL),data);
- load();
+// زر الإرجاع
+function returnItem(i){
+ if(!confirm("هل تريد إرجاع هذه القطعة؟")) return;
+ pants[i].status="متوفر";
+ localStorage.setItem("pants", JSON.stringify(pants));
+ renderStock();
 }
 
+// إضافة نوع جديد
+function addNewPant(){
+ let name = document.getElementById("newPantName").value.trim();
+ let size = document.getElementById("newPantSize").value;
+ if(!name || !size){ alert("يجب إدخال الاسم والمقاس"); return; }
+ pants.push({name:name, size:size, status:"متوفر"});
+ localStorage.setItem("pants", JSON.stringify(pants));
+ renderStock();
+ document.getElementById("newPantName").value="";
+ document.getElementById("newPantSize").value="";
+}
 </script>
 </body>
 </html>
