@@ -2,158 +2,316 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>COSTUME 17 - Firebase</title>
+<title>SYSTEME COSTUME 17</title>
 <style>
-body{font-family:Arial;direction:rtl;background:#f4f4f4}
-.container{max-width:1100px;margin:auto;background:white;padding:20px;border-radius:8px}
-table{width:100%;border-collapse:collapse}
-th,td{border:1px solid #ccc;padding:5px;text-align:center}
+body{font-family:Arial;direction:rtl;background:#f4f4f4;margin:0;padding:0;}
+.container{max-width:1100px;margin:auto;background:#fff;padding:20px;border-radius:8px}
+h2{text-align:center;margin-bottom:15px;}
+form{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-start;}
+form input, form select{padding:7px;margin:0;width:auto;flex:1;}
+button{padding:7px 12px;margin:5px;background:#3498db;color:#fff;border:none;cursor:pointer;border-radius:4px;}
+button:hover{opacity:0.85;}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:14px;}
 .available{background:#e8ffe8}
-.rented{background:#ffd6d6}
-select,input,button{padding:6px;margin:2px}
-button{background:#3498db;color:white;border:none;border-radius:4px;cursor:pointer}
-button:hover{opacity:.8}
+.unavailable{background:#ffd6d6}
+.returned{background:#fce5d6 !important}
+.stock-buttons{margin:15px 0;text-align:center;}
+.stock-buttons button{width:auto;margin:3px;padding:5px 10px;}
+#stockPages{display:none;}
+.search-section{margin:10px 0;display:flex;gap:5px;align-items:center;}
+.search-section input{flex:1;padding:6px;}
 </style>
 </head>
 <body>
 
-<div class="container">
-<h2>COSTUME 17</h2>
+<div class="container" id="mainPage">
+
+<h2>COSTUME17</h2>
 
 <form>
-<input placeholder="الاسم" id="fname">
-<input placeholder="الهاتف" id="phone">
+<input id="fname" placeholder=" الاسم واللقب">
+<input id="phone" placeholder="رقم الهاتف">
+<input type="date" id="rentDate">
 <input type="date" id="returnDate">
 
-<select id="pants"></select>
-<select id="gilets"></select>
-<select id="vests"></select>
-<select id="shirts"></select>
-<select id="belts"></select>
-<select id="shoes"></select>
-<select id="ties"></select>
-<select id="bows"></select>
-<select id="broches"></select>
+<select id="pant"></select>
+<select id="gilet"></select>
+<select id="vest"></select>
+<select id="shirt"></select>
+<select id="belt"></select>
+<select id="shoe"></select>
+<select id="tie"></select>
+<select id="bow"></select>
+<select id="broche"></select>
 
 <button type="button" onclick="addRental()">تأكيد التأجير</button>
 </form>
 
-<br>
+
+<div class="stock-buttons">
+<button onclick="window.location.href='pants.html'">مخزون السراويل</button>
+<button onclick="window.location.href='gilets.html'">مخزون الجيلي</button>
+<button onclick="window.location.href='vests.html'">مخزون الفاست</button>
+<button onclick="window.location.href='shirts.html'">مخزون القمصان</button>
+<button onclick="window.location.href='belts.html'">مخزون الأحزمة</button>
+<button onclick="window.location.href='shoes.html'">مخزون الأحذية</button>
+<button onclick="window.location.href='ties.html'">مخزون ربطات العنق</button>
+<button onclick="window.location.href='bows.html'">مخزون الفراشات</button>
+<button onclick="window.location.href='broches.html'">مخزون البروش</button>
+</div>
 
 <table>
 <thead>
 <tr>
-<th>الاسم</th><th>الهاتف</th>
-<th>سروال</th><th>جيلي</th><th>فاست</th><th>قميص</th>
-<th>حزام</th><th>حذاء</th><th>ربطة</th><th>فراشة</th><th>بروش</th>
+<th>الاسم واللقب</th>
+<th>الهاتف</th>
+<th>السروال</th>
+<th>الجيلي</th>
+<th>الفاست</th>
+<th>القميص</th>
+<th>الحزام</th>
+<th>الحذاء</th>
+<th>الربطة</th>
+<th>الفراشة</th>
+<th>البروش</th>
+<th>تاريخ الإرجاع</th>
 <th>إرجاع</th>
+<th>حذف</th>
 </tr>
 </thead>
-<tbody id="rentals"></tbody>
+<tbody id="rentalsBody"></tbody>
 </table>
 
 </div>
-<div class="stock-buttons">
-<button onclick="location.href='pants.html'">مخزن السراويل</button>
-<button onclick="location.href='gilets.html'">مخزن الجيلي</button>
-<button onclick="location.href='vests.html'">مخزن الفاست</button>
-<button onclick="location.href='shoes.html'">مخزن الأحذية</button>
-<button onclick="location.href='shirts.html'">مخزن القمصان</button>
-<button onclick="location.href='ties.html'">مخزن ربطات العنق</button>
-<button onclick="location.href='bows.html'">مخزن الفراشات</button>
-<button onclick="location.href='broches.html'">مخزن البروش</button>
-<button onclick="location.href='belts.html'">مخزن الأحزمة</button>
+
+<!-- صفحة المخزون الخاصة -->
+<div id="stockPages" class="container">
+<h2>صفحة المخزون</h2>
+<table>
+<thead>
+<tr><th>الاسم</th><th>المقاس</th><th>الحالة</th></tr>
+</thead>
+<tbody id="stockBody"></tbody>
+</table>
+<button onclick="hideStock()">رجوع للصفحة الرئيسية</button>
 </div>
 
-<!-- Firebase -->
-<script type="module">
+<script>
+// ===== المؤجرين =====
+let rentals = JSON.parse(localStorage.getItem("rentals")) || [];
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// ===== التاريخ اليوم تلقائي =====
+document.getElementById("rentDate").value = new Date().toISOString().split("T")[0];
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCmOcOnLJGlym4Z__BG6wnb43fQK8JR6ew",
-  authDomain: "costume17-79fe2.firebaseapp.com",
-  projectId: "costume17-79fe2",
-  storageBucket: "costume17-79fe2.firebasestorage.app",
-  messagingSenderId: "186622774682",
-  appId: "1:186622774682:web:f498993ae2c45423a0be23"
-};
+// ===== إنشاء المقاسات =====
+function sizes(a,b){let r=[];for(let i=a;i<=b;i+=2) r.push(i);return r;}
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// ===== المخازن =====
+let pants=[], gilets=[], vests=[], shirts=[], belts=[], shoes=[], ties=[], bows=[], broches=[];
 
-// ✅ المخازن
-const stocks = ["pants","gilets","vests","shirts","belts","shoes","ties","bows","broches"];
+// ===== تحميل من التخزين =====
+pants = JSON.parse(localStorage.getItem("pants")) || [];
+gilets = JSON.parse(localStorage.getItem("gilets")) || [];
+vests = JSON.parse(localStorage.getItem("vests")) || [];
+shirts = JSON.parse(localStorage.getItem("shirts")) || [];
+belts = JSON.parse(localStorage.getItem("belts")) || [];
+shoes = JSON.parse(localStorage.getItem("shoes")) || [];
+ties = JSON.parse(localStorage.getItem("ties")) || [];
+bows = JSON.parse(localStorage.getItem("bows")) || [];
+broches = JSON.parse(localStorage.getItem("broches")) || [];
 
-// ✅ تحميل القوائم
-async function loadStock(type){
- let select = document.getElementById(type);
- select.innerHTML = "<option value=''>--اختيار--</option>";
- let snap = await getDocs(collection(db,type));
- snap.forEach(doc=>{
-   let item = doc.data();
-   let opt = document.createElement("option");
-   opt.value = doc.id;
-   opt.innerText = item.name + (item.size ? " " + item.size : "") + " ("+item.status+")";
-   if(item.status!="متوفر") opt.disabled = true;
-   select.appendChild(opt);
+// ===== إنشاء المخزون افتراضي إن كان فارغ =====
+function initStock(){
+ if(pants.length==0) for(let i=1;i<=15;i++) sizes(42,56).forEach(s=>pants.push({name:"سروال "+i,size:s,status:"متوفر"}));
+ if(gilets.length==0) for(let i=1;i<=15;i++) sizes(42,56).forEach(s=>gilets.push({name:"جيلي "+i,size:s,status:"متوفر"}));
+ if(vests.length==0) for(let i=1;i<=15;i++) sizes(42,56).forEach(s=>vests.push({name:"فاست "+i,size:s,status:"متوفر"}));
+ if(shirts.length==0){ let s=["XS","S","M","L","XL","XXL","3XL"]; for(let i=1;i<=3;i++) s.forEach(x=>shirts.push({name:"قميص "+i,size:x,status:"متوفر"})); }
+ if(belts.length==0) for(let i=1;i<=3;i++) belts.push({name:"حزام "+i,status:"متوفر"});
+ if(shoes.length==0) for(let i=1;i<=15;i++) [39,40,41,42,43,44].forEach(s=>shoes.push({name:"حذاء "+i,size:s,status:"متوفر"}));
+ if(ties.length==0) for(let i=1;i<=20;i++) ties.push({name:"ربطة "+i,status:"متوفر"});
+ if(bows.length==0) for(let i=1;i<=10;i++) bows.push({name:"فراشة "+i,status:"متوفر"});
+ if(broches.length==0) for(let i=1;i<=10;i++) broches.push({name:"بروش "+i,status:"متوفر"});
+
+ // تعريف عالمي للوصول من showStock
+ window.pants=pants; window.gilets=gilets; window.vests=vests;
+ window.shirts=shirts; window.belts=belts; window.shoes=shoes;
+ window.ties=ties; window.bows=bows; window.broches=broches;
+
+ saveAll();
+}
+initStock();
+
+// ===== حفظ البيانات =====
+function saveAll(){
+ localStorage.setItem("pants",JSON.stringify(pants));
+ localStorage.setItem("gilets",JSON.stringify(gilets));
+ localStorage.setItem("vests",JSON.stringify(vests));
+ localStorage.setItem("shirts",JSON.stringify(shirts));
+ localStorage.setItem("belts",JSON.stringify(belts));
+ localStorage.setItem("shoes",JSON.stringify(shoes));
+ localStorage.setItem("ties",JSON.stringify(ties));
+ localStorage.setItem("bows",JSON.stringify(bows));
+ localStorage.setItem("broches",JSON.stringify(broches));
+ localStorage.setItem("rentals",JSON.stringify(rentals));
+}
+
+// ===== تعبئة القوائم =====
+function fillSelect(id,arr){
+ let s=document.getElementById(id);
+ s.innerHTML="<option value=''>--اختيار--</option>";
+ arr.forEach((x,i)=>{
+  let o=document.createElement("option");
+  o.value=i;
+  o.text = x.name + (x.size?" "+x.size:"") + " ("+x.status+")";
+  if(x.status!="متوفر") o.disabled=true;
+  s.appendChild(o);
  });
 }
 
-stocks.forEach(loadStock);
+function refreshSelects(){
+ fillSelect("pant",pants);
+ fillSelect("gilet",gilets);
+ fillSelect("vest",vests);
+ fillSelect("shirt",shirts);
+ fillSelect("belt",belts);
+ fillSelect("shoe",shoes);
+ fillSelect("tie",ties);
+ fillSelect("bow",bows);
+ fillSelect("broche",broches);
+}
+refreshSelects();
 
-// ✅ إضافة تأجير
-async function addRental(){
- let data = {
-   fname: fname.value,
-   phone: phone.value,
-   returnDate: returnDate.value,
- };
-
- for(let s of stocks){
-   data[s] = document.getElementById(s).value;
-   if(data[s]){
-     let ref = doc(db,s,data[s]);
-     await updateDoc(ref,{status:"مؤجر"});
-   }
- }
-
- await addDoc(collection(db,"rentals"),data);
- alert("تم التأجير ✅");
- location.reload();
+// ===== حماية من undefined =====
+function get(arr,v){
+ if(v==="" || !arr[v]) return "";
+ return arr[v].name + (arr[v].size?" "+arr[v].size:"");
 }
 
-// ✅ عرض المؤجرين
-async function loadRentals(){
- let body = document.getElementById("rentals");
- body.innerHTML="";
- let snap = await getDocs(collection(db,"rentals"));
- snap.forEach(d=>{
-   let r = d.data();
-   body.innerHTML+=`
-   <tr>
+// ===== عرض المؤجرين =====
+function renderRentals(list=rentals){
+ let t=document.getElementById("rentalsBody");
+ t.innerHTML="";
+ list.forEach((r,i)=>{
+  t.innerHTML+=`
+  <tr class="${r.returned?'returned':''}">
    <td>${r.fname}</td>
    <td>${r.phone}</td>
-   <td>${r.pants||""}</td>
-   <td>${r.gilets||""}</td>
-   <td>${r.vests||""}</td>
-   <td>${r.shirts||""}</td>
-   <td>${r.belts||""}</td>
-   <td>${r.shoes||""}</td>
-   <td>${r.ties||""}</td>
-   <td>${r.bows||""}</td>
-   <td>${r.broches||""}</td>
-   <td>${r.returnDate||""}</td>
-   </tr>
-   `;
+   <td>${get(pants,r.pant)}</td>
+   <td>${get(gilets,r.gilet)}</td>
+   <td>${get(vests,r.vest)}</td>
+   <td>${get(shirts,r.shirt)}</td>
+   <td>${get(belts,r.belt)}</td>
+   <td>${get(shoes,r.shoe)}</td>
+   <td>${get(ties,r.tie)}</td>
+   <td>${get(bows,r.bow)}</td>
+   <td>${get(broches,r.broche)}</td>
+   <td>${r.returnDate || "-"}</td>
+   <td><button onclick="returnRental(${i})">إرجاع</button></td>
+   <td><button onclick="deleteRental(${i})">حذف</button></td>
+  </tr>`;
+ });
+}
+renderRentals();
+
+// ===== إضافة تأجير =====
+function addRental(){
+ let r={
+  fname:fname.value,
+  phone:phone.value,
+  pant:pant.value,
+  gilet:gilet.value,
+  vest:vest.value,
+  shirt:shirt.value,
+  belt:belt.value,
+  shoe:shoe.value,
+  tie:tie.value,
+  bow:bow.value,
+  broche:broche.value,
+  returned:false,
+  returnDate: document.getElementById("returnDate").value
+ };
+ if(r.pant!=="") pants[r.pant].status="مؤجر";
+ if(r.gilet!=="") gilets[r.gilet].status="مؤجر";
+ if(r.vest!=="") vests[r.vest].status="مؤجر";
+ if(r.shirt!=="") shirts[r.shirt].status="مؤجر";
+ if(r.belt!=="") belts[r.belt].status="مؤجر";
+ if(r.shoe!=="") shoes[r.shoe].status="مؤجر";
+ if(r.tie!=="") ties[r.tie].status="مؤجر";
+ if(r.bow!=="") bows[r.bow].status="مؤجر";
+ if(r.broche!=="") broches[r.broche].status="مؤجر";
+ rentals.push(r);
+ saveAll();
+ renderRentals();
+ refreshSelects();
+}
+
+// ===== زر الإرجاع =====
+function returnRental(i){
+ let r=rentals[i];
+ [pants,gilets,vests,shirts,belts,shoes,ties,bows,broches].forEach((arr,idx)=>{
+  let k=["pant","gilet","vest","shirt","belt","shoe","tie","bow","broche"][idx];
+  if(r[k]!=="") arr[r[k]].status="متوفر";
+ });
+ r.returned=true;
+ saveAll();
+ renderRentals();
+ refreshSelects();
+}
+
+// ===== زر الحذف مع إرجاع =====
+function deleteRental(i){
+ let r=rentals[i];
+ if(!confirm("حذف المؤجر مع إرجاع القطع؟")) return;
+ returnRental(i);
+ rentals.splice(i,1);
+ saveAll();
+ renderRentals();
+ refreshSelects();
+}
+
+// ===== البحث عن بدلة =====
+function searchRental(){
+ let val = document.getElementById("searchInput").value.toLowerCase();
+ let filtered = rentals.filter(r=>{
+   let items = [
+     get(pants,r.pant),
+     get(gilets,r.gilet),
+     get(vests,r.vest),
+     get(shirts,r.shirt),
+     get(belts,r.belt),
+     get(shoes,r.shoe),
+     get(ties,r.tie),
+     get(bows,r.bow),
+     get(broches,r.broche)
+   ];
+   return items.some(x=>x.toLowerCase().includes(val));
+ });
+ renderRentals(filtered);
+}
+
+// ===== عرض المخزون الخاص =====
+function showStock(type){
+ let arr = window[type];
+ if(!arr) { alert("المخزون غير موجود!"); return; }
+ document.getElementById("mainPage").style.display="none";
+ document.getElementById("stockPages").style.display="block";
+ let tbody = document.getElementById("stockBody");
+ tbody.innerHTML="";
+ arr.forEach(x=>{
+  tbody.innerHTML+=`<tr>
+   <td>${x.name}</td>
+   <td>${x.size || "-"}</td>
+   <td>${x.status}</td>
+  </tr>`;
  });
 }
 
-loadRentals();
-
+function hideStock(){
+ document.getElementById("mainPage").style.display="block";
+ document.getElementById("stockPages").style.display="none";
+}
 </script>
 
 </body>
 </html>
-
