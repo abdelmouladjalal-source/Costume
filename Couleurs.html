@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>مخزون الوان البدلات</title>
+<style>
+body{font-family:Arial;direction:rtl;background:#f4f4f4;margin:0;padding:0;}
+.container{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:8px;}
+h2{text-align:center;margin-bottom:15px;}
+table{width:100%;border-collapse:collapse;margin-top:15px;}
+th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:14px;}
+.available{background:#e8ffe8;}
+.rented{background:#ffd6d6;}
+input,select,button{padding:5px;margin:2px;}
+button{background:#3498db;color:#fff;border:none;cursor:pointer;border-radius:4px;}
+button:hover{opacity:0.85;}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>مخزون الألوان</h2>
+
+<!-- إضافة نوع جديد -->
+<h3>إضافة نوع جديد</h3>
+<input id="newPantName" placeholder="اسم السروال">
+<select id="newPantSize">
+  <option value="">اختر المقاس</option>
+  <option value="42">42</option>
+  <option value="44">44</option>
+  <option value="46">46</option>
+  <option value="48">48</option>
+  <option value="50">50</option>
+  <option value="52">52</option>
+  <option value="54">54</option>
+  <option value="56">56</option>
+</select>
+<button onclick="addNewPant()">إضافة</button>
+
+<table>
+<thead>
+<tr><th>الاسم</th><th>المقاس</th><th>الحالة</th><th>إرجاع</th></tr>
+</thead>
+<tbody id="stockBody"></tbody>
+</table>
+
+<button onclick="window.location.href='index.html'">الرجوع للصفحة الرئيسية</button>
+</div>
+
+<script>
+// تحميل المخزون من localStorage
+let Couleurs = JSON.parse(localStorage.getItem("ِcouleurs")) || [];
+
+// عرض المخزون
+function renderStock(){
+ let tbody = document.getElementById("stockBody");
+ tbody.innerHTML = "";
+ pants.forEach((p,i)=>{
+  let cls = p.status=="مؤجر" ? "rented" : "available";
+  tbody.innerHTML += `<tr class="${cls}">
+   <td>${p.name}</td>
+   <td>${p.size || "-"}</td>
+   <td>${p.status}</td>
+   <td>${p.status=="مؤجر"?`<button onclick="returnItem(${i})">إرجاع</button>`:"-"}</td>
+  </tr>`;
+ });
+}
+renderStock();
+
+// زر الإرجاع
+function returnItem(i){
+ if(!confirm("هل تريد إرجاع هذه القطعة؟")) return;
+ pants[i].status="متوفر";
+ localStorage.setItem("pants", JSON.stringify(pants));
+ renderStock();
+}
+
+// إضافة نوع جديد
+function addNewPant(){
+ let name = document.getElementById("newPantName").value.trim();
+ let size = document.getElementById("newPantSize").value;
+ if(!name || !size){ alert("يجب إدخال الاسم والمقاس"); return; }
+ pants.push({name:name, size:size, status:"متوفر"});
+ localStorage.setItem("Couleurs ", JSON.stringify(Couleurs ));
+ renderStock();
+ document.getElementById("newCouleurName").value="";
+}
+</script>
+</body>
+</html>
