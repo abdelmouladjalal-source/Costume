@@ -23,17 +23,7 @@ button:hover{opacity:0.85;}
 
 <!-- إضافة نوع جديد -->
 <h3>إضافة نوع جديد</h3>
-<input id="newPantName" placeholder="اسم السروال">
-<select id="newPantSize">
-  <option value="">اختر المقاس</option>
-  <option value="42">42</option>
-  <option value="44">44</option>
-  <option value="46">46</option>
-  <option value="48">48</option>
-  <option value="50">50</option>
-  <option value="52">52</option>
-  <option value="54">54</option>
-  <option value="56">56</option>
+<input id="newPantName" placeholder="لون">
 </select>
 <button onclick="addNewPant()">إضافة</button>
 
@@ -71,16 +61,14 @@ renderStock();
 function returnItem(i){
  if(!confirm("هل تريد إرجاع هذه القطعة؟")) return;
  pants[i].status="متوفر";
- localStorage.setItem("pants", JSON.stringify(pants));
+ localStorage.setItem("couleurs", JSON.stringify(couleurs));
  renderStock();
 }
 
 // إضافة نوع جديد
 function addNewPant(){
  let name = document.getElementById("newPantName").value.trim();
- let size = document.getElementById("newPantSize").value;
- if(!name || !size){ alert("يجب إدخال الاسم والمقاس"); return; }
- pants.push({name:name, size:size, status:"متوفر"});
+ couleurs.push({name:name status:"متوفر"});
  localStorage.setItem("Couleurs ", JSON.stringify(Couleurs ));
  renderStock();
  document.getElementById("newCouleurName").value="";
