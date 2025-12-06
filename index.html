@@ -35,6 +35,7 @@ th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:14px;}
 <input type="date" id="rentDate">
 <input type="date" id="returnDate">
 
+<select id="Couleur"></select>
 <select id="pant"></select>
 <select id="gilet"></select>
 <select id="vest"></select>
@@ -50,6 +51,7 @@ th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:14px;}
 
 
 <div class="stock-buttons">
+<button onclick="window.location.href='couleurs.html'">مخزون الوان البدلات</button>
 <button onclick="window.location.href='pants.html'">مخزون السراويل</button>
 <button onclick="window.location.href='gilets.html'">مخزون الجيلي</button>
 <button onclick="window.location.href='vests.html'">مخزون الفاست</button>
@@ -66,6 +68,7 @@ th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:14px;}
 <tr>
 <th>الاسم واللقب</th>
 <th>الهاتف</th>
+ <th>اللون</th>
 <th>السروال</th>
 <th>الجيلي</th>
 <th>الفاست</th>
@@ -111,6 +114,7 @@ function sizes(a,b){let r=[];for(let i=a;i<=b;i+=2) r.push(i);return r;}
 let pants=[], gilets=[], vests=[], shirts=[], belts=[], shoes=[], ties=[], bows=[], broches=[];
 
 // ===== تحميل من التخزين =====
+Couleurs = JSON.parse(localStorage.getItem("couleurs")) || [];
 pants = JSON.parse(localStorage.getItem("pants")) || [];
 gilets = JSON.parse(localStorage.getItem("gilets")) || [];
 vests = JSON.parse(localStorage.getItem("vests")) || [];
@@ -123,6 +127,7 @@ broches = JSON.parse(localStorage.getItem("broches")) || [];
 
 // ===== إنشاء المخزون افتراضي إن كان فارغ =====
 function initStock(){
+ if(Couleurs.length==0) for(let i=1;i<=15;i++) sizes(42,56).forEach(s=>couleurs.push({name:"لون "+i,size:s,status:"متوفر"}));
  if(pants.length==0) for(let i=1;i<=15;i++) sizes(42,56).forEach(s=>pants.push({name:"سروال "+i,size:s,status:"متوفر"}));
  if(gilets.length==0) for(let i=1;i<=15;i++) sizes(42,56).forEach(s=>gilets.push({name:"جيلي "+i,size:s,status:"متوفر"}));
  if(vests.length==0) for(let i=1;i<=15;i++) sizes(42,56).forEach(s=>vests.push({name:"فاست "+i,size:s,status:"متوفر"}));
@@ -134,6 +139,7 @@ function initStock(){
  if(broches.length==0) for(let i=1;i<=10;i++) broches.push({name:"بروش "+i,status:"متوفر"});
 
  // تعريف عالمي للوصول من showStock
+ window.couleurs=couleurs; 
  window.pants=pants; window.gilets=gilets; window.vests=vests;
  window.shirts=shirts; window.belts=belts; window.shoes=shoes;
  window.ties=ties; window.bows=bows; window.broches=broches;
@@ -144,6 +150,7 @@ initStock();
 
 // ===== حفظ البيانات =====
 function saveAll(){
+ localStorage.setItem("Couleurs",JSON.stringify(Couleurs));
  localStorage.setItem("pants",JSON.stringify(pants));
  localStorage.setItem("gilets",JSON.stringify(gilets));
  localStorage.setItem("vests",JSON.stringify(vests));
@@ -170,6 +177,7 @@ function fillSelect(id,arr){
 }
 
 function refreshSelects(){
+ fillSelect("couleur",Couleurs);
  fillSelect("pant",pants);
  fillSelect("gilet",gilets);
  fillSelect("vest",vests);
@@ -197,6 +205,7 @@ function renderRentals(list=rentals){
   <tr class="${r.returned?'returned':''}">
    <td>${r.fname}</td>
    <td>${r.phone}</td>
+   <td>${get(couleurs,r.couleur)}</td>
    <td>${get(pants,r.pant)}</td>
    <td>${get(gilets,r.gilet)}</td>
    <td>${get(vests,r.vest)}</td>
@@ -219,6 +228,7 @@ function addRental(){
  let r={
   fname:fname.value,
   phone:phone.value,
+  couleur:couleur.value,
   pant:pant.value,
   gilet:gilet.value,
   vest:vest.value,
@@ -231,6 +241,7 @@ function addRental(){
   returned:false,
   returnDate: document.getElementById("returnDate").value
  };
+  if(r.couleur!=="") couleurs[r.couleur].status="مؤجر";
  if(r.pant!=="") pants[r.pant].status="مؤجر";
  if(r.gilet!=="") gilets[r.gilet].status="مؤجر";
  if(r.vest!=="") vests[r.vest].status="مؤجر";
@@ -249,8 +260,8 @@ function addRental(){
 // ===== زر الإرجاع =====
 function returnRental(i){
  let r=rentals[i];
- [pants,gilets,vests,shirts,belts,shoes,ties,bows,broches].forEach((arr,idx)=>{
-  let k=["pant","gilet","vest","shirt","belt","shoe","tie","bow","broche"][idx];
+ [couleurs,pants,gilets,vests,shirts,belts,shoes,ties,bows,broches].forEach((arr,idx)=>{
+  let k=["couleur","pant","gilet","vest","shirt","belt","shoe","tie","bow","broche"][idx];
   if(r[k]!=="") arr[r[k]].status="متوفر";
  });
  r.returned=true;
@@ -275,6 +286,7 @@ function searchRental(){
  let val = document.getElementById("searchInput").value.toLowerCase();
  let filtered = rentals.filter(r=>{
    let items = [
+     get(couleurs,r.pant),
      get(pants,r.pant),
      get(gilets,r.gilet),
      get(vests,r.vest),
@@ -315,3 +327,4 @@ function hideStock(){
 
 </body>
 </html>
+
