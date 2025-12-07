@@ -111,7 +111,7 @@ document.getElementById("rentDate").value = new Date().toISOString().split("T")[
 function sizes(a,b){let r=[];for(let i=a;i<=b;i+=2) r.push(i);return r;}
 
 // ===== المخازن =====
-let pants=[], gilets=[], vests=[], shirts=[], belts=[], shoes=[], ties=[], bows=[], broches=[];
+let couleurs=[], pants=[], gilets=[], vests=[], shirts=[], belts=[], shoes=[], ties=[], bows=[], broches=[];
 
 // ===== تحميل من التخزين =====
 Couleurs = JSON.parse(localStorage.getItem("couleurs")) || [];
@@ -241,7 +241,7 @@ function addRental(){
   returned:false,
   returnDate: document.getElementById("returnDate").value
  };
-  if(r.couleur!=="") couleurs[r.couleur].status="مؤجر";
+ if(r.couleur!=="") couleurs[r.couleur].status="مؤجر";
  if(r.pant!=="") pants[r.pant].status="مؤجر";
  if(r.gilet!=="") gilets[r.gilet].status="مؤجر";
  if(r.vest!=="") vests[r.vest].status="مؤجر";
@@ -327,4 +327,5 @@ function hideStock(){
 
 </body>
 </html>
+
 
