@@ -21,7 +21,7 @@ belts = JSON.parse(localStorage.getItem("belts")) || [];
 renters = JSON.parse(localStorage.getItem("renters")) || [];
 
 // ===== ملأ المخزون إذا فارغ =====
-if(Couleurs.length==0){for(let i=1;i<=15;i++) pantSizes.forEach(s=>Couleurs.push({name:"لون "+i,size:s,status:"متوفر"}));}
+if(Couleurs.length==0){for(let i=1;i<=15;i++) couleurSizes.forEach(s=>Couleurs.push({name:"لون "+i,size:s,status:"متوفر"}));}
 if(pants.length==0){for(let i=1;i<=15;i++) pantSizes.forEach(s=>pants.push({name:"سروال "+i,size:s,status:"متوفر"}));}
 if(gilets.length==0){for(let i=1;i<=15;i++) giletSizes.forEach(s=>gilets.push({name:"جيلي "+i,size:s,status:"متوفر"}));}
 if(vests.length==0){for(let i=1;i<=15;i++) vestSizes.forEach(s=>vests.push({name:"فاست "+i,size:s,status:"متوفر"}));}
@@ -56,7 +56,7 @@ function table(data,id,keys){
 }
 
 // ===== تحميل كل المخازن =====
-function loadPants(){table(couleurs,"pantsTable",["name",]);}
+function loadPants(){table(couleurs,"couleursTable",["name",]);}
 function loadPants(){table(pants,"pantsTable",["name","size"]);}
 function loadGilets(){table(gilets,"giletsTable",["name","size"]);}
 function loadVests(){table(vests,"vestsTable",["name","size"]);}
@@ -69,7 +69,7 @@ function loadBelts(){table(belts,"beltsTable",["name"]);}
 // ===== ملأ القوائم في التأجير =====
 function fill(){
  if(!selPant) return;
- selPant.innerHTML='<option value="">لون</option>'; couleurs.filter(x=>x.status=="متوفر").forEach((x,i)=>selPant.innerHTML+=`<option value="${i}">${x.name}$</option>`);
+ selPant.innerHTML='<option value="">لون</option>'; couleurs.filter(x=>x.status=="متوفر").forEach((x,i)=>selcouleur.innerHTML+=`<option value="${i}">${x.name}$</option>`);
  selPant.innerHTML='<option value="">سروال</option>'; pants.filter(x=>x.status=="متوفر").forEach((x,i)=>selPant.innerHTML+=`<option value="${i}">${x.name}-${x.size}</option>`);
  selGilet.innerHTML='<option value="">جيلي</option>'; gilets.filter(x=>x.status=="متوفر").forEach((x,i)=>selGilet.innerHTML+=`<option value="${i}">${x.name}-${x.size}</option>`);
  selVest.innerHTML='<option value="">فاست</option>'; vests.filter(x=>x.status=="متوفر").forEach((x,i)=>selVest.innerHTML+=`<option value="${i}">${x.name}-${x.size}</option>`);
@@ -99,7 +99,7 @@ function rentNow(){
  belts[selBelt.value].status="مؤجر";
 
  let t=ties.find(x=>x.name==selNeck.value) || bows.find(x=>x.name==selNeck.value);
- if(t) t.status="مكترى";
+ if(t) t.status="مؤجر";
 
  renters.push({
   fname: fname.value,
@@ -107,6 +107,7 @@ function rentNow(){
   phone: phone.value,
   rentDate: rentDate.value,
   returnDate: returnDate.value,
+  pant: Couleurs[selCouleur.value].name,
   pant: pants[selPant.value].name,
   gilet: gilets[selGilet.value].name,
   vest: vests[selVest.value].name,
@@ -171,4 +172,5 @@ function printReceipt(i){
 // ===== تاريخ اليوم تلقائي =====
 if(document.getElementById("rentDate")) rentDate.value=new Date().toISOString().split("T")[0];
 fill(); loadcouleurs(); loadPants(); loadGilets(); loadVests(); loadShirts(); loadShoes(); loadTies(); loadBows(); loadBelts(); loadRenters();
+
 
