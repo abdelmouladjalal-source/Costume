@@ -55,7 +55,7 @@ renderStock();
 function returnItem(i){
  if(!confirm("هل تريد إرجاع هذه القطعة؟")) return;
  ties[i].status="متوفر";
- localStorage.setItem("ties", JSON.stringify(ties));
+ localStorage.setItem("couleurs", JSON.stringify(couleurs));
  renderStock();
 }
 
@@ -63,7 +63,7 @@ function addNewTie(){
  let name = document.getElementById("newTieName").value.trim();
  if(!name){ alert("يجب إدخال الاسم"); return; }
  ties.push({name:name, status:"متوفر"});
- localStorage.setItem("couleurs", JSON.stringify(ties));
+ localStorage.setItem("couleurs", JSON.stringify(couleurs));
  renderStock();
  document.getElementById("newTieName").value="";
 }
