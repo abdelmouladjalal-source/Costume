@@ -127,7 +127,7 @@ broches = JSON.parse(localStorage.getItem("broches")) || [];
 
 // ===== إنشاء المخزون افتراضي إن كان فارغ =====
 function initStock(){
- if(Couleurs.length==0) for(let i=1;i<=15;i++) sizes(42,56).forEach(s=>couleurs.push({name:"لون "+i,size:s,status:"متوفر"}));
+ if(couleurs.length==0) for(let i=1;i<=20;i++) couleurs.push({name:"اللون "+i,status:"متوفر"});
  if(pants.length==0) for(let i=1;i<=15;i++) sizes(42,56).forEach(s=>pants.push({name:"سروال "+i,size:s,status:"متوفر"}));
  if(gilets.length==0) for(let i=1;i<=15;i++) sizes(42,56).forEach(s=>gilets.push({name:"جيلي "+i,size:s,status:"متوفر"}));
  if(vests.length==0) for(let i=1;i<=15;i++) sizes(42,56).forEach(s=>vests.push({name:"فاست "+i,size:s,status:"متوفر"}));
@@ -286,7 +286,7 @@ function searchRental(){
  let val = document.getElementById("searchInput").value.toLowerCase();
  let filtered = rentals.filter(r=>{
    let items = [
-     get(couleurs,r.pant),
+     get(couleurs,r.couleur),
      get(pants,r.pant),
      get(gilets,r.gilet),
      get(vests,r.vest),
@@ -327,5 +327,6 @@ function hideStock(){
 
 </body>
 </html>
+
 
 
