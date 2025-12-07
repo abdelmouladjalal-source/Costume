@@ -22,7 +22,10 @@ let shirtsSizes = ["XS","S","M","L","XL","XXL"];
 
 async function init(){
 
-// السراويل
+// اللون
+for(let i=1;i<=20;i++) await addDoc(collection(db,"couleurs"),{name:"ربطة "+i,status:"متوفر"});
+ 
+ // السراويل
 for(let i=1;i<=15;i++) for(let s of sizes42())
  await addDoc(collection(db,"pants"),{name:"سروال "+i,size:s,status:"متوفر"});
 
