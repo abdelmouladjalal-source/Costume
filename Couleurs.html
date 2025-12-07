@@ -11,7 +11,7 @@ table{width:100%;border-collapse:collapse;margin-top:15px;}
 th,td{border:1px solid #ccc;padding:6px;text-align:center;font-size:14px;}
 .available{background:#e8ffe8;}
 .rented{background:#ffd6d6;}
-input,select,button{padding:5px;margin:2px;}
+input,button{padding:5px;margin:2px;}
 button{background:#3498db;color:#fff;border:none;cursor:pointer;border-radius:4px;}
 button:hover{opacity:0.85;}
 </style>
@@ -19,17 +19,15 @@ button:hover{opacity:0.85;}
 <body>
 
 <div class="container">
-<h2>مخزون الألوان</h2>
+<h2>مخزون الوان البدلات</h2>
 
-<!-- إضافة نوع جديد -->
 <h3>إضافة نوع جديد</h3>
-<input id="newPantName" placeholder="لون">
-</select>
-<button onclick="addNewPant()">إضافة</button>
+<input id="newTieName" placeholder="لون ">
+<button onclick="addNewTie()">إضافة</button>
 
 <table>
 <thead>
-<tr><th>الاسم</th><th>المقاس</th><th>الحالة</th><th>إرجاع</th></tr>
+<tr><th>الاسم</th><th>الحالة</th><th>إرجاع</th></tr>
 </thead>
 <tbody id="stockBody"></tbody>
 </table>
@@ -38,40 +36,36 @@ button:hover{opacity:0.85;}
 </div>
 
 <script>
-// تحميل المخزون من localStorage
-let Couleurs = JSON.parse(localStorage.getItem("ِcouleurs")) || [];
+let ties = JSON.parse(localStorage.getItem("couleurs")) || [];
 
-// عرض المخزون
 function renderStock(){
  let tbody = document.getElementById("stockBody");
  tbody.innerHTML = "";
- pants.forEach((p,i)=>{
-  let cls = p.status=="مؤجر" ? "rented" : "available";
+ ties.forEach((t,i)=>{
+  let cls = t.status=="مؤجر" ? "rented" : "available";
   tbody.innerHTML += `<tr class="${cls}">
-   <td>${p.name}</td>
-   <td>${p.size || "-"}</td>
-   <td>${p.status}</td>
-   <td>${p.status=="مؤجر"?`<button onclick="returnItem(${i})">إرجاع</button>`:"-"}</td>
+   <td>${t.name}</td>
+   <td>${t.status}</td>
+   <td>${t.status=="مؤجر"?`<button onclick="returnItem(${i})">إرجاع</button>`:"-"}</td>
   </tr>`;
  });
 }
 renderStock();
 
-// زر الإرجاع
 function returnItem(i){
  if(!confirm("هل تريد إرجاع هذه القطعة؟")) return;
- pants[i].status="متوفر";
- localStorage.setItem("couleurs", JSON.stringify(couleurs));
+ ties[i].status="متوفر";
+ localStorage.setItem("ties", JSON.stringify(ties));
  renderStock();
 }
 
-// إضافة نوع جديد
-function addNewPant(){
- let name = document.getElementById("newPantName").value.trim();
- couleurs.push({name:name status:"متوفر"});
- localStorage.setItem("Couleurs ", JSON.stringify(Couleurs ));
+function addNewTie(){
+ let name = document.getElementById("newTieName").value.trim();
+ if(!name){ alert("يجب إدخال الاسم"); return; }
+ ties.push({name:name, status:"متوفر"});
+ localStorage.setItem("couleurs", JSON.stringify(ties));
  renderStock();
- document.getElementById("newCouleurName").value="";
+ document.getElementById("newTieName").value="";
 }
 </script>
 </body>
