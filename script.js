@@ -1,4 +1,4 @@
-﻿// ===== مقاسات جديدة =====
+// ===== مقاسات جديدة =====
 const pantSizes=[42,44,46,48,50,52,54,56];
 const giletSizes=[42,44,46,48,50,52,54,56];
 const vestSizes=[42,44,46,48,50,52,54,56];
@@ -6,10 +6,9 @@ const shirtSizes=["XS","S","M","L","XL","XXL","XXXL"];
 const shoeSizes=[39,40,41,42,43,44];
 
 // ===== المخازن =====
-let Couleurs=[], pants=[], gilets=[], vests=[], shirts=[], shoes=[], ties=[], bows=[], belts=[], renters=[];
+let pants=[], gilets=[], vests=[], shirts=[], shoes=[], ties=[], bows=[], belts=[], renters=[];
 
 // ===== استرجاع البيانات =====
-Couleurs= JSON.parse(localStorage.getItem("Couleurs")) || [];
 pants = JSON.parse(localStorage.getItem("pants")) || [];
 gilets = JSON.parse(localStorage.getItem("gilets")) || [];
 vests = JSON.parse(localStorage.getItem("vests")) || [];
@@ -21,7 +20,6 @@ belts = JSON.parse(localStorage.getItem("belts")) || [];
 renters = JSON.parse(localStorage.getItem("renters")) || [];
 
 // ===== ملأ المخزون إذا فارغ =====
-if(Couleurs.length==0){for(let i=1;i<=15;i++) couleurSizes.forEach(s=>Couleurs.push({name:"لون "+i,size:s,status:"متوفر"}));}
 if(pants.length==0){for(let i=1;i<=15;i++) pantSizes.forEach(s=>pants.push({name:"سروال "+i,size:s,status:"متوفر"}));}
 if(gilets.length==0){for(let i=1;i<=15;i++) giletSizes.forEach(s=>gilets.push({name:"جيلي "+i,size:s,status:"متوفر"}));}
 if(vests.length==0){for(let i=1;i<=15;i++) vestSizes.forEach(s=>vests.push({name:"فاست "+i,size:s,status:"متوفر"}));}
@@ -33,7 +31,6 @@ if(belts.length==0){for(let i=1;i<=3;i++) belts.push({name:"حزام "+i,status:
 
 // ===== حفظ البيانات =====
 function saveData(){
- localStorage.setItem("Couleurs",JSON.stringify(Couleurs));
  localStorage.setItem("pants",JSON.stringify(pants));
  localStorage.setItem("gilets",JSON.stringify(gilets));
  localStorage.setItem("vests",JSON.stringify(vests));
@@ -56,7 +53,6 @@ function table(data,id,keys){
 }
 
 // ===== تحميل كل المخازن =====
-function loadPants(){table(couleurs,"couleursTable",["name",]);}
 function loadPants(){table(pants,"pantsTable",["name","size"]);}
 function loadGilets(){table(gilets,"giletsTable",["name","size"]);}
 function loadVests(){table(vests,"vestsTable",["name","size"]);}
@@ -69,7 +65,6 @@ function loadBelts(){table(belts,"beltsTable",["name"]);}
 // ===== ملأ القوائم في التأجير =====
 function fill(){
  if(!selPant) return;
- selPant.innerHTML='<option value="">لون</option>'; couleurs.filter(x=>x.status=="متوفر").forEach((x,i)=>selcouleur.innerHTML+=`<option value="${i}">${x.name}$</option>`);
  selPant.innerHTML='<option value="">سروال</option>'; pants.filter(x=>x.status=="متوفر").forEach((x,i)=>selPant.innerHTML+=`<option value="${i}">${x.name}-${x.size}</option>`);
  selGilet.innerHTML='<option value="">جيلي</option>'; gilets.filter(x=>x.status=="متوفر").forEach((x,i)=>selGilet.innerHTML+=`<option value="${i}">${x.name}-${x.size}</option>`);
  selVest.innerHTML='<option value="">فاست</option>'; vests.filter(x=>x.status=="متوفر").forEach((x,i)=>selVest.innerHTML+=`<option value="${i}">${x.name}-${x.size}</option>`);
@@ -82,7 +77,7 @@ function fill(){
 // ===== تسجيل التأجير وحساب السعر =====
 function rentNow(){
  let err=false;
- [selcouleur,selPant,selGilet,selVest,selShirt,selNeck,selShoe,selBelt].forEach(x=>{
+ [selPant,selGilet,selVest,selShirt,selNeck,selShoe,selBelt].forEach(x=>{
   if(!x.value){x.style.background="#ffc7ce"; err=true}else x.style.background="";
  });
  if(err) return alert("اختر جميع العناصر");
@@ -90,16 +85,15 @@ function rentNow(){
  let price = 500+400+300+300+100+200+150; // سعر تقريبي لكل صنف
 
  // تحديث المخزون
- couleurs[selPant.value].status="مؤجر";
- pants[selPant.value].status="مؤجر";
- gilets[selGilet.value].status="مؤجر";
- vests[selVest.value].status="مؤجر";
- shirts[selShirt.value].status="مؤجر";
- shoes[selShoe.value].status="مؤجر";
- belts[selBelt.value].status="مؤجر";
+ pants[selPant.value].status="مكترى";
+ gilets[selGilet.value].status="مكترى";
+ vests[selVest.value].status="مكترى";
+ shirts[selShirt.value].status="مكترى";
+ shoes[selShoe.value].status="مكترى";
+ belts[selBelt.value].status="مكترى";
 
  let t=ties.find(x=>x.name==selNeck.value) || bows.find(x=>x.name==selNeck.value);
- if(t) t.status="مؤجر";
+ if(t) t.status="مكترى";
 
  renters.push({
   fname: fname.value,
@@ -107,7 +101,6 @@ function rentNow(){
   phone: phone.value,
   rentDate: rentDate.value,
   returnDate: returnDate.value,
-  pant: Couleurs[selCouleur.value].name,
   pant: pants[selPant.value].name,
   gilet: gilets[selGilet.value].name,
   vest: vests[selVest.value].name,
@@ -119,7 +112,7 @@ function rentNow(){
  });
 
  alert("تم التأجير بنجاح! السعر: "+price+" DA");
- fill(); saveData(); loadcouleurs(); loadPants(); loadGilets(); loadVests(); loadShirts(); loadShoes(); loadTies(); loadBows(); loadBelts(); loadRenters();
+ fill(); saveData(); loadPants(); loadGilets(); loadVests(); loadShirts(); loadShoes(); loadTies(); loadBows(); loadBelts(); loadRenters();
 }
 
 // ===== قائمة المؤجرين =====
@@ -128,7 +121,7 @@ function loadRenters(data=renters){
  data.forEach((r,i)=>{
   t.innerHTML+=`<tr>
    <td>${r.fname}</td><td>${r.lname}</td><td>${r.phone}</td>
-   <td>${r.couleur}<td>${r.pant}</td><td>${r.gilet}</td><td>${r.vest}</td><td>${r.shirt}</td>
+   <td>${r.pant}</td><td>${r.gilet}</td><td>${r.vest}</td><td>${r.shirt}</td>
    <td>${r.neck}</td><td>${r.shoe}</td><td>${r.belt}</td>
    <td>${r.rentDate}</td><td>${r.returnDate}</td>
    <td>${r.price}</td>
@@ -154,7 +147,6 @@ function printReceipt(i){
  w.document.write(`<h2>وصل تأجير</h2>
 <p>الاسم: ${r.fname} ${r.lname}</p>
 <p>الهاتف: ${r.phone}</p>
-<p>لون: ${r.couleur}</p>
 <p>سروال: ${r.pant}</p>
 <p>جيلي: ${r.gilet}</p>
 <p>فاست: ${r.vest}</p>
@@ -171,6 +163,4 @@ function printReceipt(i){
 
 // ===== تاريخ اليوم تلقائي =====
 if(document.getElementById("rentDate")) rentDate.value=new Date().toISOString().split("T")[0];
-fill(); loadcouleurs(); loadPants(); loadGilets(); loadVests(); loadShirts(); loadShoes(); loadTies(); loadBows(); loadBelts(); loadRenters();
-
-
+fill(); loadPants(); loadGilets(); loadVests(); loadShirts(); loadShoes(); loadTies(); loadBows(); loadBelts(); loadRenters();
